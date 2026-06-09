@@ -1,0 +1,5 @@
+<small class="packeta-delivery-name"></small><br>
+<button class="packeta-selector-open btn btn-default" onclick="Packeta.Widget.pick(packetaApiKey, showSelectedPickupPoint, packetaOptions)">
+    {{ with "Select collection point" }}{{ i18n . | default . }}{{ end }}
+</button>
+<input class="cart-delivery-details" name="packeta-delivery-details" type="hidden">

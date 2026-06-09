@@ -1,0 +1,73 @@
+<script src="https://widget.packeta.com/v6/www/js/library.js"></script>
+<script>
+const packetaApiKey = '{{ .apiKey | default "" }}'
+
+const packetaOptions = {
+    {{- with .countries }}
+    country: "{{ delimit . "," }}",
+    {{- end }}
+    language: "{{ site.LanguageCode | default "en" }}",
+    {{- with .longitude }}
+    longitude: {{ . }},
+    {{- end }}
+    {{- with .latitude }}
+    latitude: {{ . }},
+    {{- end }}
+}
+
+const detailsKeys = [
+    "id",
+    "carrierId",
+    "carrierPickupPointId",
+    "branchCode",
+    "routingCode",
+    "name",
+    "city",
+    "street",
+    "country",
+    "url",
+]
+
+function showSelectedPickupPoint(point) {
+    if (point) {
+        Cart.deliveryDetails = {}
+        for (const key of detailsKeys) {
+            Cart.deliveryDetails[key] = point[key]
+        }
+        Cart.deliveryDetails['summary'] = "Packeta: " + point.id
+        Cart.deliveryDetails['formatted_address'] = {
+            'city': point.city,
+            'country': point.country,
+            'line1': point.street,
+            'line2': (point.place + ' ' + point.special).trim(),
+            'postal_code': point.zip,
+        }
+
+        const inputElement = document.querySelector("#cart-summary .cart-delivery-details[name=packeta-delivery-details]")
+        if (inputElement) {
+            inputElement.value = JSON.stringify(Cart.deliveryDetails)
+        }
+        const nameElement = document.querySelector("#cart-summary .packeta-delivery-name")
+        if (nameElement) {
+            nameElement.innerText = point.name
+        }
+        const deliveryInput = document.querySelector("#cart-summary input[name=delivery][value=packeta]")
+        if (deliveryInput) {
+            deliveryInput.click()
+            deliveryInput.checked = true
+        }
+        const checkoutButton = document.querySelector("#cart-checkout")
+        if (checkoutButton) {
+            checkoutButton.disabled = false
+        }
+        console.log("Selected point", point);
+
+        try {
+            updateDeliveryPrices()
+        } catch (error) {
+            console.log(error)
+        }
+    };
+}
+
+</script>
